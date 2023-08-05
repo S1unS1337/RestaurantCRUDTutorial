@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button as MuiButton, makeStyles } from '@mui/material'
+import { Button as MuiButton } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,7 +18,7 @@ export default function Button(props) {
   return (
     <MuiButton
         className={classes.root + ' ' + (className || '')}
-        variant={varient || 'contained'}
+        variant={variant || 'contained'}
         color={color || 'default'}
         onClick={onClick}
         {...other}>
