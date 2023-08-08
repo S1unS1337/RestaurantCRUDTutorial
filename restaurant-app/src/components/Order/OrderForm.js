@@ -1,8 +1,11 @@
 import React, {useState} from 'react'
 import Form from '../layouts/Form'
-import { Grid, InputAdornment } from '@mui/material'
+import { ButtonGroup, Grid, InputAdornment, Button as MuiButton } from '@mui/material'
 import { Input, Select, Button } from '../controls'
 import { makeStyles } from '@mui/styles'
+import ReplayIcon from '@mui/icons-material/Replay';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import ReorderIcon from '@mui/icons-material/Reorder';
 
 const pMethods = [
   {id: 'none', title: 'Select'},
@@ -17,6 +20,17 @@ const useStyles = makeStyles(theme => ({
       color: '#f3b33d',
       fontWeight: 'bolder',
       fontSize: '1.5 em'
+    }
+  },
+  submitButtonGroup: {
+    backgroundColor: '#f3b33d',
+    color: '#000',
+    margin: theme.spacing(1),
+    '& .MuiButton-label': {
+        textTransform: 'none'
+    },
+    '&:hover': {
+        backgroundColor: '#C0C0C0',
     }
   }
 }))
@@ -69,7 +83,7 @@ export default function OrderForm(props) {
               ></Select>
 
             <Input
-                margin = {"30px 0 0 0"}
+                margin = {"30px 0 15px 0"}
                 disabled = {true}
                 label = "Grand Total"
                 name = "gTotal"
@@ -80,6 +94,21 @@ export default function OrderForm(props) {
                     position='start'>$</InputAdornment>
                 }}
               />
+              <ButtonGroup className={classes.submitButtonGroup}>
+              <MuiButton
+                size='large'
+                endIcon={<RestaurantMenuIcon/>}
+                type='submit'>Submit
+                </MuiButton>
+              <MuiButton
+                size= 'small'
+                startIcon= {<ReplayIcon/>}
+                />
+              </ButtonGroup>
+              <Button
+                size="large"
+                margin={"0 0 0 15px"}
+                startIcon={<ReorderIcon/>}>Orders</Button>
             </Grid>
       </Grid>
     </Form>
