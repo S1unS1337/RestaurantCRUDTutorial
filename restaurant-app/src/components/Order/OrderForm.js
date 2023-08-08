@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
 import Form from '../layouts/Form'
-import { Grid } from '@mui/material'
+import { Grid, InputAdornment } from '@mui/material'
 import { Input, Select, Button } from '../controls'
+import { makeStyles } from '@mui/styles'
 
 const pMethods = [
   {id: 'none', title: 'Select'},
@@ -10,60 +11,53 @@ const pMethods = [
 
 ]
 
-const generateOrderNumber = () => Math.floor(100000 + Math.random() * 900000).toString()
-
-const getFreshModelObject = () => ({
-  orderMasterId: 0,
-  orderNumber: generateOrderNumber(),
-  customerId: 0,
-  pMethod: 'none',
-  gTotal: 0,
-  deletedOrderItems: '',
-  orderDetails: []
-})
-
-export default function OrderForm() {
-
-
-  const [values, setValues] = useState(getFreshModelObject())
-  const handleInputChange = e => {
-    const {name, value} = e.target
-    setValues({
-      ...values,
-      [name]: value
-    })
+const useStyles = makeStyles(theme => ({
+  adornmentText: {
+    '& .MuiTypography-root': {
+      color: '#f3b33d',
+      fontWeight: 'bolder',
+      fontSize: '1.5 em'
+    }
   }
+}))
 
-  const resetFormControls = () =>{
-    setValues(getFreshModelObject())
-  }
+export default function OrderForm(props) {
 
+  const {values, errors, handleInputChange} = props
+  const classes = useStyles()
   return (
     <Form>
-      <Grid container>
-            <Grid item xs={6}>
+      <Grid container >
+            <Grid item xs={6} >
               <Input
-                disabled = {true}
-                label = "Order Number"
-                name = "orderNumber"
-                value = {values.orderNumber}
+                    margin = {"0 0 30px 0"}
+                    disabled = {true}
+                    label = "Order Number"
+                    name = "orderNumber"
+                    value = {values.orderNumber}
+                    InputProps = {{
+                    startAdornment: <InputAdornment
+                        className={classes.adornmentText}
+                        position='start'>#</InputAdornment>
+                    }}
               />
-              <Select
-              label = "Customer"
-              name = "customerId"
-              value = {values.customerId}
-              options = {[
-                {id: 0, title: 'Select'},
-                {id: 1, title: 'Vladik bro'},
-                {id: 2, title: 'Lyoha bro'},
-                {id: 3, title: 'Kolya bro'},
-                {id: 4, title: 'Dima bro'},
-                {id: 5, title: 'Stasik bro'},
-                {id: 6, title: 'Sanya bro'},
-                {id: 7, title: 'Tyoma bro'}
-              ]
-              }
-              ></Select>
+                <Select
+                    label = "Customer"
+                    name = "customerId"
+                    value = {values.customerId}
+                    options = {[
+                        {id: 0, title: 'Select'},
+                        {id: 1, title: 'Vladik bro'},
+                        {id: 2, title: 'Lyoha bro'},
+                        {id: 3, title: 'Kolya bro'},
+                        {id: 4, title: 'Dima bro'},
+                        {id: 5, title: 'Stasik bro'},
+                        {id: 6, title: 'Sanya bro'},
+                        {id: 7, title: 'Tyoma bro'}
+                    ]
+                    }
+                    onChange = {handleInputChange}
+                ></Select>
             </Grid>
             <Grid item xs={6}>
             <Select
@@ -75,10 +69,16 @@ export default function OrderForm() {
               ></Select>
 
             <Input
+                margin = {"30px 0 0 0"}
                 disabled = {true}
                 label = "Grand Total"
                 name = "gTotal"
                 value = {values.gTotal}
+                InputProps = {{
+                  startAdornment: <InputAdornment
+                    className={classes.adornmentText}
+                    position='start'>$</InputAdornment>
+                }}
               />
             </Grid>
       </Grid>
