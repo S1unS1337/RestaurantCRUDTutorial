@@ -7,6 +7,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import ReorderIcon from '@mui/icons-material/Reorder';
 import { createAPIEndpoint, ENDPOINTS } from '../../api'
+import { roundTo2DecimalPoint } from '../../utils'
 
 const pMethods = [
   {id: 'none', title: 'Select'},
@@ -38,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrderForm(props) {
 
-    const {values, errors, handleInputChange} = props
+    const {values, setValues, errors, handleInputChange} = props
     const classes = useStyles()
     const [customerList, setCustomerList] = useState([])
 
@@ -54,6 +55,16 @@ export default function OrderForm(props) {
         })
         .catch(err => console.log(err))
     }, [])
+
+    useEffect(() =>{
+        let gTotal = values.orderDetails.reduce((tempTotal, item) => {
+            return tempTotal + (item.foodItemPrice * item.quantity)
+        }, 0)
+        setValues({
+            ...values,
+            gTotal : roundTo2DecimalPoint(gTotal)
+        })
+    }, [JSON.stringify(values.orderDetails)])
     return (
         <Form>
         <Grid container >
@@ -103,7 +114,7 @@ export default function OrderForm(props) {
                     size='large'
                     endIcon={<RestaurantMenuIcon/>}
                     type='submit'>Submit
-                    </MuiButton>
+                </MuiButton>
                 <MuiButton
                     size= 'small'
                     startIcon= {<ReplayIcon/>}
