@@ -47,11 +47,27 @@ const useStyles = makeStyles(theme =>({
 
 export default function SearchFoodItems(props) {
 
-    const { addFoodItem, orderedFoodItems } = props
+    const { values, setValues } = props
+    let orderedFoodItems = values.orderDetails
     const [foodItems, setFoodItems] = useState([])
     const [searchList, setSearchList] = useState([])
     const [searchKey, setSearchKey] = useState('')
     const classes = useStyles()
+
+    const addFoodItem = foodItem => {
+        let x ={
+            orderMasterId: values.orderMasterId,
+            orderDetailId: 0,
+            foodItemId: foodItem.foodItemId,
+            quantity: 1,
+            foodItemPrice: foodItem.foodItemPrice,
+            foodItemName: foodItem.foodItemName
+        }
+        setValues({
+          ...values,
+          orderDetails: [...values.orderDetails, x]
+        })
+      }
 
     useEffect(() => {
         createAPIEndpoint(ENDPOINTS.FOODITEM).fetchAll()
@@ -88,13 +104,14 @@ export default function SearchFoodItems(props) {
             searchList.map((item, idx) =>(
                 <ListItem
                 className={classes.listItem}
-                key = {idx}>
+                key = {idx}
+                onClick={e => addFoodItem(item)}>
                     <ListItemText
                     primary = {item.foodItemName}
                     secondary = {'$' + item.foodItemPrice}
                     />
                     <ListItemSecondaryAction>
-                        <IconButton onClick={e => addFoodItem(item)}>
+                        <IconButton disableRipple onClick={e => addFoodItem(item)}>
                             <PlusOneIcon/>
                             <ArrowForwardIosIcon/>
                         </IconButton>
