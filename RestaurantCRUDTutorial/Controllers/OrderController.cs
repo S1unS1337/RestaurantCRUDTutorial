@@ -28,7 +28,9 @@ namespace RestaurantCRUDTutorial.Controllers
           {
               return NotFound();
           }
-            return await _context.OrderMasters.ToListAsync();
+            return await _context.OrderMasters
+                .Include(x => x.Customer)
+                .ToListAsync();
         }
 
         // GET: api/Order/5
