@@ -8,6 +8,8 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import ReorderIcon from '@mui/icons-material/Reorder';
 import { createAPIEndpoint, ENDPOINTS } from '../../api'
 import { roundTo2DecimalPoint } from '../../utils'
+import Popup from '../layouts/Popup'
+import OrderList from './OrderList'
 
 const pMethods = [
   {id: 'none', title: 'Select'},
@@ -39,9 +41,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrderForm(props) {
 
-    const {values, setValues, errors, handleInputChange} = props
+    const {values, setValues, errors, setErrors, handleInputChange, resetFormControls} = props
     const classes = useStyles()
+
     const [customerList, setCustomerList] = useState([])
+    const [orderListVisibility, setOrderListVisibility] = useState(false);
 
     useEffect(() => {
         createAPIEndpoint(ENDPOINTS.CUSTOMER).fetchAll()
@@ -65,67 +69,108 @@ export default function OrderForm(props) {
             gTotal : roundTo2DecimalPoint(gTotal)
         })
     }, [JSON.stringify(values.orderDetails)])
+
+    const validateForm = () =>{
+        let temp = {}
+        temp.customerId = values.customerId != 0?"":"This field is required."
+        temp.pMethod = values.pMethod != "none"?"":"This field is required."
+        temp.orderDetails = values.orderDetails.length != 0?"":"This field is required."
+        setErrors({...temp})
+        return Object.values(temp).every(x => x === "");
+    }
+
+    const submitOrder = e => {
+        e.preventDefault();
+        if(validateForm()){
+            createAPIEndpoint(ENDPOINTS.ORDER).create(values)
+            .then(res => {
+                console.log(res)
+                resetFormControls()
+            })
+            .catch(err => console.log(err))
+        }
+
+    }
+
+    const openListOfOrders = () => {
+        setOrderListVisibility(true);
+    }
+
     return (
-        <Form>
-        <Grid container >
-                <Grid item xs={6} >
-                <Input
-                        margin = {"0 0 30px 0"}
+        <>
+            <Form onSubmit = {submitOrder}>
+            <Grid container >
+                    <Grid item xs={6} >
+                    <Input
+                            margin = {"0 0 30px 0"}
+                            disabled = {true}
+                            label = "Order Number"
+                            name = "orderNumber"
+                            value = {values.orderNumber}
+                            InputProps = {{
+                            startAdornment: <InputAdornment
+                                className={classes.adornmentText}
+                                position='start'>#</InputAdornment>
+                            }}
+                    />
+                        <Select
+                            label = "Customer"
+                            name = "customerId"
+                            value = {values.customerId}
+                            options = {customerList}
+                            onChange = {handleInputChange}
+                            error = {errors.customerId}>
+
+                            </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                    <Select
+                    label = "PaymentMethod"
+                    name = "pMethod"
+                    value = {values.pMethod}
+                    options = {pMethods}
+                    onChange = {handleInputChange}
+                    error = {errors.pMethod}
+                    >
+                    </Select>
+
+                    <Input
+                        margin = {"30px 0 15px 0"}
                         disabled = {true}
-                        label = "Order Number"
-                        name = "orderNumber"
-                        value = {values.orderNumber}
+                        label = "Grand Total"
+                        name = "gTotal"
+                        value = {values.gTotal}
                         InputProps = {{
                         startAdornment: <InputAdornment
                             className={classes.adornmentText}
-                            position='start'>#</InputAdornment>
+                            position='start'>$</InputAdornment>
                         }}
-                />
-                    <Select
-                        label = "Customer"
-                        name = "customerId"
-                        value = {values.customerId}
-                        options = {customerList}
-                        onChange = {handleInputChange}></Select>
-                </Grid>
-                <Grid item xs={6}>
-                <Select
-                label = "PaymentMethod"
-                name = "pMethod"
-                value = {values.pMethod}
-                options = {pMethods}
-                onChange = {handleInputChange}
-                ></Select>
-
-                <Input
-                    margin = {"30px 0 15px 0"}
-                    disabled = {true}
-                    label = "Grand Total"
-                    name = "gTotal"
-                    value = {values.gTotal}
-                    InputProps = {{
-                    startAdornment: <InputAdornment
-                        className={classes.adornmentText}
-                        position='start'>$</InputAdornment>
-                    }}
-                />
-                <ButtonGroup className={classes.submitButtonGroup}>
-                <MuiButton
-                    size='large'
-                    endIcon={<RestaurantMenuIcon/>}
-                    type='submit'>Submit
-                </MuiButton>
-                <MuiButton
-                    size= 'small'
-                    startIcon= {<ReplayIcon/>}
                     />
-                </ButtonGroup>
-                <Button
-                    size="large"
-                    margin={"0 0 0 15px"}
-                    startIcon={<ReorderIcon/>}>Orders</Button>
-                </Grid>
-        </Grid>
-        </Form>
+                    <ButtonGroup className={classes.submitButtonGroup}>
+                    <MuiButton
+                        size='large'
+                        endIcon={<RestaurantMenuIcon/>}
+                        type='submit'>Submit
+                    </MuiButton>
+                    <MuiButton
+                        size= 'small'
+                        startIcon= {<ReplayIcon/>}
+                        />
+                    </ButtonGroup>
+                    <Button
+                        size="large"
+                        onClick = {openListOfOrders}
+                        margin={"0 0 0 15px"}
+                        startIcon={<ReorderIcon/>}>Orders</Button>
+                    </Grid>
+            </Grid>
+            </Form>
+            <Popup
+                title = "List of orders"
+                openPopup={orderListVisibility}
+                setOpenPopup={setOrderListVisibility}>
+                <OrderList/>
+            </Popup>
+        </>
     )
 }
