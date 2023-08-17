@@ -128,7 +128,7 @@ export default function OrderedFoodItems(props) {
                     >
                         <IconButton
                         disableRipple
-                        onClick={e => removeFoodItem(idx, item.orderDetailsId)}>
+                        onClick={e => removeFoodItem(idx, item.orderDetailId)}>
                             <BackspaceIcon/>
                         </IconButton>
                     </ListItemSecondaryAction>
