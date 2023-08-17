@@ -93,6 +93,25 @@ namespace RestaurantCRUDTutorial.Controllers
 
             _context.Entry(orderMaster).State = EntityState.Modified;
 
+            foreach(var item in orderMaster.OrderDetails)
+            {
+                if(item.OrderDetailId == id)
+                {
+                    _context.OrderDetails.Add(item);
+                }
+                else
+                {
+                    _context.Entry(item).State = EntityState.Modified;
+                }
+
+            }
+
+            foreach(var item in orderMaster.DeletedOrderItemIds.Split(',').Where(x => x != ""))
+            {
+                var y = _context.OrderDetails.Find(Convert.ToInt64(item));
+                _context.OrderDetails.Remove(y);
+            }
+
             try
             {
                 await _context.SaveChangesAsync();
