@@ -90,12 +90,9 @@ namespace RestaurantCRUDTutorial.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(orderMaster).State = EntityState.Modified;
-
             foreach(var item in orderMaster.OrderDetails)
             {
-                if(item.OrderDetailId == id)
+                if(item.OrderDetailId == 0)
                 {
                     _context.OrderDetails.Add(item);
                 }
