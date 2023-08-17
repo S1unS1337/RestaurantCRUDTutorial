@@ -37,18 +37,48 @@ namespace RestaurantCRUDTutorial.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderMaster>> GetOrderMaster(long id)
         {
-          if (_context.OrderMasters == null)
-          {
+            if (_context.OrderMasters == null)
+            {
               return NotFound();
-          }
-            var orderMaster = await _context.OrderMasters.FindAsync(id);
+            }
+
+            var orderDetails = await (from master in _context.Set<OrderMaster>()
+                                      join detail in _context.Set<OrderDetail>()
+                                      on master.OrderMasterId equals detail.OrderMasterId
+                                      where master.OrderMasterId == id
+                                      join foodItem in _context.Set<FoodItem>()
+                                      on detail.FoodItemId equals foodItem.FoodItemId
+                                      select new
+                                          {
+                                            master.OrderMasterId,
+                                            detail.OrderDetailId,
+                                            detail.FoodItemId,
+                                            detail.Quantity,
+                                            detail.FoodItemPrice,
+                                            foodItem.FoodItemName
+                                          }).ToListAsync();
+
+            var orderMaster = await (from a in _context.Set<OrderMaster>()
+                                     where a.OrderMasterId == id
+
+                                     select new
+                                         {
+                                          a.OrderMasterId,
+                                          a.OrderNumber,
+                                          a.CustomerId,
+                                          a.PMethod,
+                                          a.GTotal,
+                                          deletedOrderItemIds="",
+                                          orderDetails = orderDetails
+                                         }
+                                     ).FirstOrDefaultAsync();
 
             if (orderMaster == null)
             {
                 return NotFound();
             }
 
-            return orderMaster;
+            return Ok(orderMaster);
         }
 
         // PUT: api/Order/5
