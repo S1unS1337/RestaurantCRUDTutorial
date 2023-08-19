@@ -202,7 +202,7 @@ export default function OrderForm(props) {
                 openPopup={orderListVisibility}
                 setOpenPopup={setOrderListVisibility}>
                 <OrderList
-                {...{setOrderId, setOrderListVisibility}}
+                {...{setOrderId, setOrderListVisibility, resetFormControls, setNotify}}
                 />
             </Popup>
             <Notification
