@@ -111,6 +111,7 @@ namespace RestaurantCRUDTutorial.Controllers
 
             try
             {
+                _context.Entry(orderMaster).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
