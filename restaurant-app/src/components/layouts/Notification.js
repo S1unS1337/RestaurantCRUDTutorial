@@ -36,7 +36,6 @@ export default function Notification(props) {
             autoHideDuration={3000}
             className={classes.root}
             open={notify.isOpen}
-            anchorOrigin = {{vertical: 'top', horizontal: 'right'}}
             onClose={handleClose}
             >
             <Alert
